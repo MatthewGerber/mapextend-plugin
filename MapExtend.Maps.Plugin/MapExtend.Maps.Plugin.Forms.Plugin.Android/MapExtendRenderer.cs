@@ -16,7 +16,7 @@ namespace Xam.Plugin.MapExtend.Droid
     /// <summary>
     /// MapExtend.Maps.Plugin Implementation
     /// </summary>
-    public class MapExtendRenderer : MapRenderer
+    public class MapExtendRenderer : MapRenderer, IOnMapReadyCallback
     {
         /// <summary>
         /// Used for registration with dependency service
@@ -26,14 +26,14 @@ namespace Xam.Plugin.MapExtend.Droid
             FormsMaps.Init(activity, bundle);
         }
 
-        protected override void OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs<View> e)
+        /// <summary>
+        /// Ons the element changed.
+        /// </summary>
+        /// <param name="e">E.</param>
+        protected override void OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs<Map> e)
         {
-            base.OnElementChanged(e);
-
-            var formsMap = (Xam.Plugin.MapExtend.Abstractions.MapExtend)Element;
-            var androidMapView = (Android.Gms.Maps.MapView)Control;
-
-
+            var formsMap = (Abstractions.MapExtend)Element;
+            var androidMapView = Control;
 
             if (formsMap != null)
             {
@@ -48,7 +48,7 @@ namespace Xam.Plugin.MapExtend.Droid
                 {
                     formsMap.Pins.Add(new Pin
                     {
-                        Label = "Meu Endereço",
+                        Label = "Pin",
                         Position = new Position(a.Point.Latitude, a.Point.Longitude)
                     }
                     );
@@ -68,7 +68,6 @@ namespace Xam.Plugin.MapExtend.Droid
             var formsMap = (Xam.Plugin.MapExtend.Abstractions.MapExtend)Element;
 
             androidMapView.Map.Clear();
-
             androidMapView.Map.MarkerClick += HandleMarkerClick;
             androidMapView.Map.MyLocationEnabled = formsMap.IsShowingUser;
 
@@ -83,11 +82,11 @@ namespace Xam.Plugin.MapExtend.Droid
 
                 try
                 {
-                    markerWithIcon.InvokeIcon(BitmapDescriptorFactory.FromResource(Resources.GetIdentifier(item.ResourceNameImg, "drawable", Context.PackageName)));
+                    markerWithIcon.SetIcon(BitmapDescriptorFactory.FromResource(Resources.GetIdentifier(item.ResourceNameImg, "drawable", Context.PackageName)));
                 }
                 catch (Exception)
                 {
-                    markerWithIcon.InvokeIcon(BitmapDescriptorFactory.DefaultMarker());
+                    markerWithIcon.SetIcon(BitmapDescriptorFactory.DefaultMarker());
                 }
 
                 androidMapView.Map.AddMarker(markerWithIcon);
